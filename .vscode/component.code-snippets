@@ -23,7 +23,7 @@
 "templatePromise.then((templateDocument)=>{",
 	"\t${1:NewCmponent}.template = templateDocument.getElementById(\"${2:new-component}\");",
 	"\twindow.constructor_withTemplate.push(${1:NewCmponent});",
-"}",
+"});",
 "export default function ${1:NewCmponent}(){",
 	"\tconst _this = Reflect.construct(HTMLElement, [], ${1:NewCmponent});",
 	"\t_this.attachShadow({mode: \"open\"});",

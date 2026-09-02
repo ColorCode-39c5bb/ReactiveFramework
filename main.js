@@ -69,6 +69,9 @@ HTMLElement.prototype.reactiverender_for = function(rdarray, render){
 	}
 };
 
+
+import AppMain from "./component/AppMain.js";
+import NotSlotted from "./component/NotSlotted.js";
 window.constructor_withTemplate = [];
 //window.router = new Router(config_route);
 //window.router.push("/blog");
@@ -82,3 +85,4 @@ Promise.all(requestCache.values()).then(()=>{
 	});
 	document.body.appendChild(appmain);
 });
+
