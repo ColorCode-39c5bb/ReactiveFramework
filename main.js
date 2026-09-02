@@ -1,15 +1,11 @@
-import Router from "./Router.js";
-import config_route from "./config/config_route.js";
-import {requestCache} from "./template.js";
-
 HTMLElement._render = function(render){
-	return function(rd, render_acquired){
+	return function(rd, render_acquired, merge=this.reactivemerge){
 		this.rd_torender ??= [];
 		this.rd_torender.push(rd);
 		if(this.__proto__.constructor == HTMLElement) return;
 		if(!this.isConnected) return;
 
-		rd = this.reactivemerge();
+		rd = merge.call(this);
 		this.rd_torender = undefined;
 		if(rd == undefined) return;
 		render.call(this, rd, render_acquired);
@@ -41,17 +37,17 @@ HTMLElement.prototype.reactivemerge = function(){
 	return rd;
 }
 
-HTMLElement.prototype.reactiverender = HTMLElement._render(function(rd, render){
-	if(typeof(render)!="function") return;
-	render.call(this, rd);
+HTMLElement.prototype.reactiverender = HTMLElement._render(function(rd, render_acquired, merge_acquired){
+	if(typeof(render_acquired)!="function") return;
+	render_acquired.call(this, rd);
 });
 
-HTMLElement.prototype.reactiverender_for = function(rdarray, render){
+HTMLElement.prototype.reactiverender_for = function(rdarray, render_acquired, merge_acquired){
 	//if(!rdarray) throw new Error("rdarray必须是数组, 否则此方法不应该有机会调用");
 	if(rdarray == undefined) return;
-	if(!this.Ns_active) this.Ns_active = [this];
-	if(!this.Ns_inactive) this.Ns_inactive = [];
-	if(!this.container) this.container = this.parentElement;
+	this.Ns_active ??= [this];
+	this.Ns_inactive ??= [];
+	this.container ??= this.parentElement;
 	for(let i=0; i<rdarray.length; i++){
 		let next = this.Ns_active[i];
 		if(!next){
@@ -60,7 +56,7 @@ HTMLElement.prototype.reactiverender_for = function(rdarray, render){
 			this.container.appendChild(next);
 			this.Ns_active.push(next);
 		}
-		next.reactiverender(rdarray[i], render);
+		next.reactiverender(rdarray[i], render_acquired, merge_acquired);
 	}
 	for(let j=this.Ns_active.length-rdarray.length; j>0; j--){
 		const item = this.Ns_active.pop();
@@ -69,9 +65,13 @@ HTMLElement.prototype.reactiverender_for = function(rdarray, render){
 	}
 };
 
+import Router from "./Router.js";
+import config_route from "./config/config_route.js";
+import {requestCache} from "./template.js";
 
-import AppMain from "./component/AppMain.js";
 import NotSlotted from "./component/NotSlotted.js";
+import AppMain from "./component/AppMain.js";
+
 window.constructor_withTemplate = [];
 //window.router = new Router(config_route);
 //window.router.push("/blog");
