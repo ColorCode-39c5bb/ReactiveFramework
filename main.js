@@ -1,14 +1,14 @@
 HTMLElement._render = function(render){
-	return function(rd, render_acquired, merge=this.reactivemerge){
+	return function(rd_delta, render_acquired, merge=this.reactivemerge){
 		this.rd_torender ??= [];
-		this.rd_torender.push(rd);
+		this.rd_torender.push(rd_delta);
 		if(this.__proto__.constructor == HTMLElement) return;
 		if(!this.isConnected) return;
 
-		rd = merge.call(this);
+		rd_delta = merge.call(this);
 		this.rd_torender = undefined;
-		if(rd == undefined) return;
-		render.call(this, rd, render_acquired);
+		if(rd_delta == undefined) return;
+		render.call(this, rd_delta, render_acquired);
 	};
 };
 
@@ -28,18 +28,18 @@ HTMLElement.prototype.initShadowRoot = function(){
 }
 
 HTMLElement.prototype.reactivemerge = function(){
-	const rd = this.rd_torender.reduce(function(prev, cur){
-		if(!prev) return cur;
+	const rd_delta = this.rd_torender.reduce(function(prev, cur){
+		if(!prev) return cur; //if(!cur) return prev;
 		return Object.assign(prev, cur);
 	});
 	this.reactivedata ??= {};
-	Object.assign(this.reactivedata, rd);
-	return rd;
+	Object.assign(this.reactivedata, rd_delta);
+	return rd_delta;
 }
 
-HTMLElement.prototype.reactiverender = HTMLElement._render(function(rd, render_acquired, merge_acquired){
+HTMLElement.prototype.reactiverender = HTMLElement._render(function(rd_delta, render_acquired, merge_acquired){
 	if(typeof(render_acquired)!="function") return;
-	render_acquired.call(this, rd);
+	render_acquired.call(this, rd_delta);
 });
 
 HTMLElement.prototype.reactiverender_for = function(rdarray, render_acquired, merge_acquired){
@@ -74,7 +74,7 @@ import AppMain from "./component/AppMain.js";
 
 window.constructor_withTemplate = [];
 //window.router = new Router(config_route);
-//window.router.push("/blog");
+//window.router.push("/home");
 Promise.all(requestCache.values()).then(()=>{
 	const appmain = document.getElementById("appmain");
 	appmain.remove();
@@ -85,4 +85,3 @@ Promise.all(requestCache.values()).then(()=>{
 	});
 	document.body.appendChild(appmain);
 });
-
