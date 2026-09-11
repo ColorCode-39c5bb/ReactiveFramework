@@ -1,5 +1,5 @@
 {
-"Component Define": {
+"CustomElememt Define": {
   "prefix": "function",
   "body": [
     "import templatePromise from \"../template.js\";",
@@ -11,14 +11,13 @@
     "	const _this = Reflect.construct(HTMLElement, [], ${1:CustomElement});",
     "	_this.attachShadow({mode: \"open\"});",
     "	_this.initShadowRoot();",
-    "	${0}",
+    "",
     "	return _this;",
     "}",
     "Object.setPrototypeOf(${1:CustomElement}.prototype, HTMLElement.prototype);",
     "Object.setPrototypeOf(${1:CustomElement}, HTMLElement);",
     "Object.defineProperty(${1:CustomElement}, \"observedAttributes\", {get: function() {return []}});",
     "${1:CustomElement}.prototype.connectedCallback = function(){",
-    "	",
     "}",
     "${1:CustomElement}.prototype.attributeChangedCallback = function(name, oldValue, newValue){",
     "	",
@@ -29,24 +28,18 @@
     "${1:CustomElement}.prototype.adoptedCallback = function(){",
     "	",
     "}",
-    "//${1:CustomElement}.prototype.reactiverender = function(rd_delta){",
-    "//	const rd_this = this.reactivedata;",
+    "//${1:CustomElement}.prototype.reactiverender = function(rd){",
+    "//",
     "//}",
     "",
-    "//${1:CustomElement}.prototype.RDCLASS = function(){",
-    "//	this.groups = [];",
-    "//}",
-    "//${1:CustomElement}.prototype.RDCLASS.prototype.merge = function(Ns_rd_delta){",
-    "//	const rd_delta = Ns_rd_delta.reduce(function(prev, cur){",
-    "//		if(!prev) return cur; if(!cur) return prev;",
-    "//",
-    "//		return prev;",
-    "//	});",
-    "//",
-    "//	Object.assign(this, rd_delta);",
-    "//	return rd_delta;",
-    "//}"
+    "${1:CustomElement}.prototype.RDCLASS = function(){",
+    "	this.construction = {",
+    "		i_f: true,",
+    "		${0:}",
+    "	};",
+    "	return this;",
+    "}"
   ],
-  "description": "Component Define"
+  "description": "CustomElememt Define"
 }
 }
