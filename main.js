@@ -74,14 +74,14 @@ Object.defineProperties(DataReactive.prototype, {
 DataReactive.prototype.merge = function(rd_torender, keys_transitive=[]){
 	function update(dt, dd, construction){ Object.keys(dd).forEach((k)=>{
 		if(dd[k]===null) dd[k] = structuredClone(construction[k]?.data_default);
-		switch(get_mode(dd[k], construction[k])){
+		switch(get_mergemode(dd[k], construction[k])){
 			case "mode_transitive":
 				const keypath = construction.keypath+"."+k;
 				if(!keys_transitive.includes(keypath)){
 					keys_transitive.push(keypath);
-					dt[k] = Object.defineProperties(new DataReactive("type_multiple"), {datadelta: {value: []}, mergemode: {value: "mode_incremental", enumerable: false}, isprimary: {value: true, enumerable: false}});
+					dt[k] = Object.defineProperty(new DataReactive("type_multiple"), "datavalue", {value: []});
 				}
-				return dt[k].datadelta.push(dd[k]);
+				return dt[k].datavalue.push(dd[k]);
 			case false: case "mode_full":
 				if(dd[k]===undefined) return dt[k]=dd[k];
 				if(dd[k].__proto__.constructor==Array) return dt[k]=dd[k];
@@ -98,7 +98,7 @@ DataReactive.prototype.merge = function(rd_torender, keys_transitive=[]){
 		if(dt[k]===undefined) dt[k] = {};
 		update(dt[k], dd[k], Object.defineProperty(construction[k], "keypath", {value: construction.keypath+"."+k, configurable: true}));
 	});}
-	function get_mode(dd, construction){
+	function get_mergemode(dd, construction){
 		for(let m of [dd?.mergemode, construction?.mergemode]) if(m!==undefined) return m;
 		return "mode_full";
 	}
@@ -110,7 +110,7 @@ DataReactive.prototype.merge = function(rd_torender, keys_transitive=[]){
 	for(let rd of rd_torender){
 		switch(rd?.datatype){
 			case "type_nothing": continue;
-			case "type_multiple": this.merge(rd.datadelta, keys_transitive); continue;
+			case "type_multiple": this.merge(rd.datavalue, keys_transitive); continue;
 		}
 		// case undefined:
 		Object.defineProperty(DataReactive.const_dd, "datadelta", {value: rd, enumerable: true});
