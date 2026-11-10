@@ -1,11 +1,15 @@
 export default [
 {
 	path: "/",
-	state: {currentPage: "Home"},
+	state: {},
+},
+{
+	path: "/xxx",
+	state: {},
 	routes: [
 		{
-			path: "/home/xxx",
-			state: {currentPage: "XXX"},
+			path: "/xxx/xxx",
+			state: {},
 		},
 	]
 },

@@ -1,6 +1,6 @@
 export default function Router(config_route) {
 	this.Ns_link_config = new Map();
-	this.Ns_link_target = new Map();
+	this.Ns_link_page = new Map();
 	const setroute = (route)=>{
 		route.forEach((route)=>{
 			this.Ns_link_config.set(route.path, route);
@@ -15,10 +15,10 @@ export default function Router(config_route) {
 			this.push(a.getAttribute("href"));
 		}, false);
 	});
-	document.querySelectorAll("[route]:not(a)").forEach((target)=>{
-		target.target_container = target.parentElement;
-		this.Ns_link_target.set(target.getAttribute("route"), target);
-		target.remove();
+	document.querySelectorAll("[route]:not(a)").forEach((page)=>{
+		page.page_container = page.parentElement;
+		this.Ns_link_page.set(page.getAttribute("route"), page);
+		page.remove();
 	});
 
 	window.addEventListener("popstate", this.render.bind(this), false);
@@ -29,22 +29,12 @@ Router.prototype.render = function() {
 	const topath = window.location.pathname;
 	const patharray = topath.split("/");
 	for(let i=1, path="/"+patharray[i]; i<patharray.length; i++, path+=("/"+patharray[i])){
-		const target = this.Ns_link_target.get(path);	
-		if(!target || target.isConnected) continue;
-		target.target_container.replaceChildren(target);
+		const page = this.Ns_link_page.get(path);
+		if(!page || page.isConnected) continue;
+		page.page_container.replaceChildren(page);
+		if(page.rd_torender?.length) page.reactiverender({datatype: "type_skipping"}); //给没有connectedCallback逻辑的兜底，如果connectedCallback里有调用reactiverender那么到这句时已经page.rd_torender.length==0
 	}
 	window.dispatchEvent(new Event("routechange"));
-}
-
-Router.prototype.parseParams = function(path) {
-	const params = {};
-	const queryString = path.slice(2);
-	const queryPairs = queryString.split('&');
-	for (const pair of queryPairs) {
-		const [key, value] = pair.split('=');
-		params[key] = decodeURIComponent(value);
-	}
-	return params;
 }
 
 Router.prototype.push = function(topath) {
